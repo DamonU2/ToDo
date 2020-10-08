@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>To Do List</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+  <div class="todo">
+      <h1 class="todo__header">To Do List 📝</h1>
+
+      <div class="card todo__headerContainer">
+          <h3 class="font-weight-bold">Add a new task</h3>
+          <form class="todo__form" action="{{ url_for('add') }}" method="POST">
+              <input placeholder="Write task here..." type="text" name="todoitem">
+              <input class="btn btn-info" type="submit" value="Add Task">
+          </form>
+      </div>
+
+      <div class="todo__itemContainer">
+          {% if incomplete %}
+          <div class="card todo__innerItemContainer">
+
+              <h2 class="todo__itemHeader">To Do</h2>
+
+              <ul class="todo__container">
+                  {% for todo in incomplete %}
+                  <li class="todo__item">
+                      <h4>{{ todo.text }}</h4>
+                      <a class="todo__close" href="{{ url_for('delete', id=todo.id) }}">☒</a>
+                      {% for step in inc_step %}
+                        {% if step.id == todo.id %}
+                          <p class="step_item">- {{ step.text }}  <a href="{{ url_for('complete_step', id=step.step_id) }}">✅</a></p>
+                        {% endif %}
+                      {% endfor %}
+                      {% for step in com_step %}
+                        {% if step.id == todo.id %}
+                          <p class="step_item">- <strike>{{ step.text }}</strike>  <a href="{{ url_for('delete_step', id=step.step_id) }}">❌</a></p>
+                        {% endif %}
+                      {% endfor %}
+                      <form class="step_form" action="{{ url_for('add_step', id=todo.id) }}" method="POST">
+                          <input placeholder="Write step here..." type="text" name="todostep">
+                          <input class="btn btn-outline-dark btn-sm" type="submit" value="Add Step">
+                      </form>
+                      <a class="btn btn-success" href="{{ url_for('complete', id=todo.id) }}" class="">Task Complete</a>
+                  </li>
+                  {% endfor %}
+              </ul>
+
+          </div>
+          {% endif %}
+
+          {% if complete %}
+          <div class="card todo__innerItemContainer">
+
+              <h2 class="todo__itemHeader">Completed</h2>
+
+              <ul class="todo__container">
+                  {% for todo in complete %}
+                  <li class="todo__item">
+                      <h4>{{ todo.text }}</h4>
+                      <a class="btn btn-outline-warning btn-sm" href="{{ url_for('uncheck', id=todo.id) }}" class="">⭯ Undo Completion</a>
+                      <a class="todo__close" href="{{ url_for('delete', id=todo.id) }}" class="">☒</a>
+                  </li>
+                  {% endfor %}
+              </ul>
+          </div>
+          {% endif %}
+      </div>
+  </div>
+
+  </body>
+  </html>
